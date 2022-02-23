@@ -52,6 +52,7 @@ class Xml extends BaseXml
                         throw new InvalidMappingException("Sortable position field - [{$field}] type is not valid and must be 'integer' in class - {$meta->getName()}");
                     }
                     $config['position'] = $field;
+                    $config['positions'][] = $field;
                 }
             }
             $this->readSortableGroups($xml->field, $config, 'name');

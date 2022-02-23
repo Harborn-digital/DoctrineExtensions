@@ -57,6 +57,7 @@ class Yaml extends File implements Driver
                             throw new InvalidMappingException("Sortable position field - [{$field}] type is not valid and must be 'integer' in class - {$meta->getName()}");
                         }
                         $config['position'] = $field;
+                        $config['positions'][] = $field;
                     }
                 }
             }

@@ -99,7 +99,7 @@ abstract class MappedEventSubscriber implements EventSubscriber
      *
      * @return array
      */
-    public function getConfiguration(ObjectManager $objectManager, $class)
+    public function getConfiguration(ObjectManager $objectManager, $class, $changeSet = [])
     {
         if (isset(self::$configurations[$this->name][$class])) {
             return self::$configurations[$this->name][$class];
@@ -126,6 +126,17 @@ abstract class MappedEventSubscriber implements EventSubscriber
         $objectClass = $config['useObjectClass'] ?? $class;
         if ($objectClass !== $class) {
             $this->getConfiguration($objectManager, $objectClass);
+        }
+
+        if (!array_key_exists('position', $config) || !array_key_exists('positions', $config) || [] === $changeSet) {
+            return $config;
+        }
+
+        // if one of the changeset fields is also part of the 'positions' we will set it as our active position field
+        foreach ($changeSet as $field => $value) {
+            if (array_search($field, $config['positions'], true)) {
+                $config['position'] = $field;
+            }
         }
 
         return $config;

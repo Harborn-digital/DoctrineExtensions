@@ -93,24 +93,27 @@ class SortableListener extends MappedEventSubscriber
 
         // process all objects being deleted
         foreach ($ea->getScheduledObjectDeletions($uow) as $object) {
+            $changeSet = $ea->getObjectChangeSet($uow, $object);
             $meta = $om->getClassMetadata(get_class($object));
-            if ($config = $this->getConfiguration($om, $meta->getName())) {
+            if ($config = $this->getConfiguration($om, $meta->getName(), $changeSet)) {
                 $this->processDeletion($ea, $config, $meta, $object);
             }
         }
 
         // process all objects being updated
         foreach ($ea->getScheduledObjectUpdates($uow) as $object) {
+            $changeSet = $ea->getObjectChangeSet($uow, $object);
             $meta = $om->getClassMetadata(get_class($object));
-            if ($config = $this->getConfiguration($om, $meta->getName())) {
+            if ($config = $this->getConfiguration($om, $meta->getName(), $changeSet)) {
                 $this->processUpdate($ea, $config, $meta, $object);
             }
         }
 
         // process all objects being inserted
         foreach ($ea->getScheduledObjectInsertions($uow) as $object) {
+            $changeSet = $ea->getObjectChangeSet($uow, $object);
             $meta = $om->getClassMetadata(get_class($object));
-            if ($config = $this->getConfiguration($om, $meta->getName())) {
+            if ($config = $this->getConfiguration($om, $meta->getName(), $changeSet)) {
                 $this->processInsert($ea, $config, $meta, $object);
             }
         }
@@ -127,8 +130,10 @@ class SortableListener extends MappedEventSubscriber
         $om = $ea->getObjectManager();
         $object = $ea->getObject();
         $meta = $om->getClassMetadata(get_class($object));
+        $uow = $om->getUnitOfWork();
+        $changeSet = $ea->getObjectChangeSet($uow, $object);
 
-        if ($config = $this->getConfiguration($om, $meta->getName())) {
+        if ($config = $this->getConfiguration($om, $meta->getName(), $changeSet)) {
             // Get groups
             $groups = $this->getGroups($meta, $config, $object);
 
@@ -200,6 +205,21 @@ class SortableListener extends MappedEventSubscriber
                     if ($className !== $ea->getRootObjectClass($meta) || !$this->getConfiguration($em, $className)) {
                         continue;
                     }
+
+                    // check all changesets to see if another position field is used, if so, use this one
+                    $config = $this->getConfiguration($em, $relocation['name']);
+                    foreach ($objects as $object) {
+                        $changeSet = $ea->getObjectChangeSet($uow, $object);
+                        if ([] !== $changeSet) {
+                            $changeSetConfig = $this->getConfiguration($em, $relocation['name'], $changeSet);
+                            if ($config['position'] !== $changeSetConfig['position']) {
+                                $config['position'] = $changeSetConfig['position'];
+
+                                break;
+                            }
+                        }
+                    }
+
                     foreach ($objects as $object) {
                         if ($object instanceof GhostObjectInterface && !$object->isProxyInitialized()) {
                             continue;
