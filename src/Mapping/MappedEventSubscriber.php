@@ -101,10 +101,6 @@ abstract class MappedEventSubscriber implements EventSubscriber
      */
     public function getConfiguration(ObjectManager $objectManager, $class, $changeSet = [])
     {
-        if (isset(self::$configurations[$this->name][$class])) {
-            return self::$configurations[$this->name][$class];
-        }
-
         $config = [];
 
         $cacheItemPool = $this->getCacheItemPool($objectManager);

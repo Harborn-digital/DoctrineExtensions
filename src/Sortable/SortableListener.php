@@ -190,7 +190,6 @@ class SortableListener extends MappedEventSubscriber
         $updatedObjects = [];
 
         foreach ($this->relocations as $hash => $relocation) {
-            $config = $this->getConfiguration($em, $relocation['name']);
             foreach ($relocation['deltas'] as $delta) {
                 if ($delta['start'] > $this->maxPositions[$hash] || 0 == $delta['delta']) {
                     continue;
@@ -541,8 +540,12 @@ class SortableListener extends MappedEventSubscriber
         }
 
         $em = $ea->getObjectManager();
+        $object = $ea->getObject();
+        $uow = $em->getUnitOfWork();
+        $changeSet = $ea->getObjectChangeSet($uow, $object);
+
         foreach ($this->relocations as $hash => $relocation) {
-            $config = $this->getConfiguration($em, $relocation['name']);
+            $config = $this->getConfiguration($em, $relocation['name'], $changeSet);
             foreach ($relocation['deltas'] as $delta) {
                 if ($delta['start'] > $this->maxPositions[$hash] || 0 == $delta['delta']) {
                     continue;
