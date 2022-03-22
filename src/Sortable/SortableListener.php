@@ -323,10 +323,7 @@ class SortableListener extends MappedEventSubscriber
 
         // Compute position if it is negative
         if ($newPosition < 0) {
-            $newPosition += $this->maxPositions[$hash] + 2; // position == -1 => append at end of list
-            if ($newPosition < 0) {
-                $newPosition = 0;
-            }
+            $newPosition = -1;
         }
 
         // Set position to max position if it is too big
@@ -436,15 +433,7 @@ class SortableListener extends MappedEventSubscriber
 
         // Compute position if it is negative
         if ($newPosition < 0) {
-            if (-1 === $oldPosition) {
-                $newPosition += $this->maxPositions[$hash] + 2; // position == -1 => append at end of list
-            } else {
-                $newPosition += $this->maxPositions[$hash] + 1; // position == -1 => append at end of list
-            }
-
-            if ($newPosition < 0) {
-                $newPosition = 0;
-            }
+            $newPosition = -1;
         } elseif ($newPosition > $this->maxPositions[$hash]) {
             if ($groupHasChanged) {
                 $newPosition = $this->maxPositions[$hash] + 1;
