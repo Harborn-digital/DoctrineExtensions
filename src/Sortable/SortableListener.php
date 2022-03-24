@@ -474,6 +474,8 @@ class SortableListener extends MappedEventSubscriber
         if (-1 === $oldPosition) {
             // special case when group changes
             $relocation = [$hash, $config['useObjectClass'], $groups, $newPosition, -1, +1];
+        } elseif ($newPosition < 0) {
+            $relocation = [$hash, $config['useObjectClass'], $groups, $newPosition, $oldPosition, 0]; // don't relocate target if new position of source: -1
         } elseif ($newPosition < $oldPosition) {
             $relocation = [$hash, $config['useObjectClass'], $groups, $newPosition, $oldPosition, +1];
         } elseif ($newPosition > $oldPosition) {
