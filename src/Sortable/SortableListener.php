@@ -332,7 +332,7 @@ class SortableListener extends MappedEventSubscriber
         // Compute relocations
         // New inserted entities should not be relocated by position update, so we exclude it.
         // Otherwise they could be relocated unintentionally.
-        $relocation = [$hash, $config['useObjectClass'], $groups, $newPosition, -1, +1, [$object]];
+        $relocation = [$hash, $config['useObjectClass'], $groups, $newPosition, -1, 0, [$object]];
 
         // Apply existing relocations
         $applyDelta = 0;
@@ -516,7 +516,7 @@ class SortableListener extends MappedEventSubscriber
         }
 
         // Add relocation
-        $this->addRelocation($hash, $config['useObjectClass'], $groups, $position, -1, -1);
+        $this->addRelocation($hash, $config['useObjectClass'], $groups, $position, -1, 0);
     }
 
     /**
